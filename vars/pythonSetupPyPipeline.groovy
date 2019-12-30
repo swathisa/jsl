@@ -226,10 +226,10 @@ def call(Map pipelineParams) {
               }
             }
             when {
-              beforeAgent true
               allOf {
                 expression {
-                  params.doRelease
+                  params.doRelease &&
+                  isDeployDocsPluginInstalled()
                 }
               }
             }
@@ -237,7 +237,7 @@ def call(Map pipelineParams) {
               sshagent([pipelineParams.sshAgentUser]) {
                 script {
                   //check if "ghp-import" plugin is installed to deploy docs
-                  isDeployDocsPluginInstalled()
+                  //isDeployDocsPluginInstalled()
                   sh "git --version"
                   sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
                   sh "git tag docs-$moduleVersion docs"
@@ -370,9 +370,5 @@ def deployDockerImage(dockerRegistryUrl, dockerRegistryCredentialsId, dockerFile
 }
 
 def isDeployDocsPluginInstalled() {
-  try {
-    sh(script: "pip show ghp-import", returnStatus: true) == 0
-  } catch(err) {
-    echo "WARNING: ghp-import not found ${err}"
-  }
+  return sh(script: "pip show ghp-import", returnStatus: true) == 0
 }
