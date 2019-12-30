@@ -221,7 +221,6 @@ def call(Map pipelineParams) {
             when {
               beforeAgent true
               allOf {
-                branch "master"
                 expression {
                   params.doRelease &&
                   //check if "ghp-import" plugin is installed to deploy docs
