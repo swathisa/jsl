@@ -222,6 +222,7 @@ def call(Map pipelineParams) {
               beforeAgent true
               allOf {
                 expression {
+                  triggeredBy cause: "UserIdCause"
                   params.doRelease &&
                   //check if "ghp-import" plugin is installed to deploy docs
                   isDeployDocsPluginInstalled()
