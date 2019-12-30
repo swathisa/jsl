@@ -229,7 +229,8 @@ def call(Map pipelineParams) {
               beforeAgent true
               allOf {
                 expression {
-                  params.doRelease
+                  params.doRelease && 
+                  isDeployDocsPluginInstalled()
                 }
               }
             }
