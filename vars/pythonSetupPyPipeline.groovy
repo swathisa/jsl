@@ -370,5 +370,9 @@ def deployDockerImage(dockerRegistryUrl, dockerRegistryCredentialsId, dockerFile
 }
 
 def isDeployDocsPluginInstalled() {
-  return sh(script: "pip show ghp-import", returnStatus: true) == 0
+  try {
+    sh(script: "pip show ghp-import", returnStatus: true) == 0
+  } catch(err) {
+    echo "WARNING: ghp-import not found ${err}"
+  }
 }
