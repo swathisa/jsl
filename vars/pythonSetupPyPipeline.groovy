@@ -218,11 +218,17 @@ def call(Map pipelineParams) {
 
           // Deploy the html documents to the docs branch, which when using "BitBucket Pages" allows serving the documentation directly
           stage("Deploy Docs") {
+            agent {
+              docker {
+                image buildImageName
+                args pipelineParams.dockerRunArgs
+                reuseNode true
+              }
+            }
             when {
               beforeAgent true
               allOf {
                 expression {
-                  triggeredBy cause: "UserIdCause"
                   params.doRelease &&
                   //check if "ghp-import" plugin is installed to deploy docs
                   isDeployDocsPluginInstalled()
