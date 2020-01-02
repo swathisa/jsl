@@ -227,16 +227,16 @@ def call(Map pipelineParams) {
             }
             when {
               allOf {
+                beforeAgent true
                 expression {
-                  params.doRelease &&
-                  isDeployDocsPluginInstalled()
+                  params.doRelease
                 }
               }
             }
             steps {
               sshagent([pipelineParams.sshAgentUser]) {
                 sh "git --version"
-                // sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
+                sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
                 sh "git tag docs-$moduleVersion docs"
                 sh "git push origin docs --tags"
               }
