@@ -226,8 +226,8 @@ def call(Map pipelineParams) {
               }
             }
             when {
+              beforeAgent true
               allOf {
-                beforeAgent true
                 expression {
                   params.doRelease
                 }
