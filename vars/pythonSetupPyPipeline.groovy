@@ -215,6 +215,30 @@ def call(Map pipelineParams) {
                                 pipelineParams.dockerRepo, moduleName, moduleVersion)
             }
           } // Deploy Docker
+
+          stage("Deploy Docs") {
+            agent {
+              docker {
+                image buildImageName
+                args pipelineParams.dockerRunArgs
+                reuseNode true
+              }
+            }
+            when {
+              allOf {
+                expression { params.doRelease }
+              }
+            }
+            steps {
+              sshagent([pipelineParams.sshAgentUser]) {
+                script {
+                  sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
+                  sh "git tag docs-$moduleVersion docs"
+                  sh "git push origin docs --tags"
+                }
+              }
+            }
+          } // Deploy Docs
         }
       } // Deploy
 
