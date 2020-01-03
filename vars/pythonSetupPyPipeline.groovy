@@ -98,7 +98,6 @@ def call(Map pipelineParams) {
                 //   will be installed and the doc generation will fail due to not found imports.
                 sh "python setup.py develop --user"
                 sh "python setup.py build_sphinx"
-                sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
               }
             }
           } // Build docs
@@ -169,6 +168,8 @@ def call(Map pipelineParams) {
             moduleName = sh(script: "python setup.py --name", returnStdout: true).trim()
             moduleVersion = sh(script: "python setup.py --version", returnStdout: true).trim()
           }
+
+          sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
         }
       } // Package
 
