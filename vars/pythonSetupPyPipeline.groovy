@@ -227,6 +227,7 @@ def call(Map pipelineParams) {
             steps {
               withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
                 script {
+                  sh "git checkout docs"
                   sh "git tag docs-$moduleVersion docs"
                   sh "git push origin docs --tags"
                 }
