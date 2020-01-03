@@ -219,17 +219,34 @@ def call(Map pipelineParams) {
           } // Deploy Docker
 
           stage("Deploy Docs") {
-            when {
-              allOf {
-                expression { params.doRelease }
+            stages {
+              stage("generate") {
+                when {
+                  allOf {
+                    expression {
+                      params.doRelease &&
+                      //check if "ghp-import" plugin is installed to deploy docs
+                      isDeployDocsPluginInstalled()
+                    }
+                  }
+                }
+                agent {
+                  docker {
+                    image buildImageName
+                    args pipelineParams.dockerRunArgs
+                    reuseNode true
+                  }
+                }
+                steps {
+                  sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
+                }
               }
-            }
-            steps {
-              withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
-                script {
-                  sh "git checkout docs"
-                  sh "git tag docs-$moduleVersion docs"
-                  sh "git push origin docs --tags"
+              stage("push docs") {
+                steps {
+                  withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
+                    sh "git tag docs-$moduleVersion docs"
+                    sh "git push origin docs --tags"
+                  }
                 }
               }
             }
@@ -365,4 +382,8 @@ def deployDockerImage(dockerRegistryUrl, dockerRegistryCredentialsId, dockerFile
       sh "docker rmi ${image.imageName()}"
     }
   }
+}
+
+def isDeployDocsPluginInstalled() {
+  return sh(script: "pip show ghp-import", returnStatus: true) == 0
 }
