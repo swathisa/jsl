@@ -238,9 +238,6 @@ def call(Map pipelineParams) {
                   }
                 }
                 steps {
-                  withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
-                    sh "git pull origin docs"
-                  }
                   sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
                 }
               }
@@ -248,7 +245,7 @@ def call(Map pipelineParams) {
                 steps {
                   withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
                     sh "git tag docs-$moduleVersion docs"
-                    sh "git push origin docs --tags"
+                    sh "git push -u origin docs --tags"
                   }
                 }
               }
