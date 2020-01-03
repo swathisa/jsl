@@ -232,7 +232,7 @@ def call(Map pipelineParams) {
             steps {
               withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
                 script {
-                  sh "git fetch origin docs:docs"
+                  sh "git checkout docs"
                   sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
                   sh "git tag docs-$moduleVersion docs"
                   sh "git push origin docs --tags"
