@@ -238,7 +238,7 @@ def call(Map pipelineParams) {
                 steps {
                   withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
                     sh "git config user.name \"$pipelineParams.scmCredentialsId\""
-                    sh "git config user.email \"no-reply@acdc-ci.navkit-pipeline.tt3.com\""
+                    sh "git config user.email \"swathi.srirangapatnaashokkumar@tomtom.com\""
                     sh "git checkout docs"
                     sh "git fetch origin docs:docs"
                     sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
