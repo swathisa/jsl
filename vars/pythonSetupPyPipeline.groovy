@@ -230,10 +230,12 @@ def call(Map pipelineParams) {
               }
             }
             steps {
-              script {
-                sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
-                sh "git tag docs-$moduleVersion docs"
-                sh "git push origin docs --tags"
+              withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
+                script {
+                  sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
+                  sh "git tag docs-$moduleVersion docs"
+                  sh "git push origin docs --tags"
+                }
               }
             }
           } // Deploy Docs
