@@ -168,8 +168,6 @@ def call(Map pipelineParams) {
             moduleName = sh(script: "python setup.py --name", returnStdout: true).trim()
             moduleVersion = sh(script: "python setup.py --version", returnStdout: true).trim()
           }
-
-          sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
         }
       } // Package
 
@@ -241,6 +239,8 @@ def call(Map pipelineParams) {
                   withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
                     sh "git config user.name \"$pipelineParams.scmCredentialsId\""
                     sh "git config user.email \"no-reply@acdc-ci.navkit-pipeline.tt3.com\""
+                    sh "git checkout docs"
+                    sh "git fetch origin docs:docs"
                     sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
                     sh "git checkout docs"
                     sh "git log"
