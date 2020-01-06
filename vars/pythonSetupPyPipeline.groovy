@@ -219,6 +219,13 @@ def call(Map pipelineParams) {
           stage("Deploy Docs") {
             stages {
               stage("generate") {
+                agent {
+                  docker {
+                    image buildImageName
+                    args pipelineParams.dockerRunArgs
+                    reuseNode true
+                  }
+                }
                 when {
                   allOf {
                     expression {
@@ -228,17 +235,10 @@ def call(Map pipelineParams) {
                     }
                   }
                 }
-                agent {
-                  docker {
-                    image buildImageName
-                    args pipelineParams.dockerRunArgs
-                    reuseNode true
-                  }
-                }
                 steps {
                     //sh "git config user.name \"tt-ci\""
                     //sh "git config user.email \"noreply@tomtom.com\""
-                    //sh "git fetch origin docs:docs"
+                    sh "git fetch origin docs:docs"
                     sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
                     sh "git checkout docs"
                     sh "git log"
