@@ -243,12 +243,14 @@ def call(Map pipelineParams) {
                     sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
                     sh "git checkout docs"
                     sh "git log"
+                    //sh "git config user.name"
                   }
                 }
               }
               stage("push docs") {
                 steps {
                   withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
+                    sh "git config user.name"
                     sh "git tag docs-$moduleVersion docs"
                     sh "git push origin docs --tags"
                   }
