@@ -237,12 +237,9 @@ def call(Map pipelineParams) {
                 }
                 steps {
                   withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
-                    sh "git config user.name \"$pipelineParams.scmCredentialsId\""
-                    sh "git config user.email \"swathi.srirangapatnaashokkumar@tomtom.com\""
-                    sh "git checkout docs"
-                    sh "git fetch origin docs:docs"
+                    sh "git config user.name \"tt-ci\""
+                    sh "git config user.email \"noreply@tomtom.com\""
                     sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
-                    sh "git checkout docs"
                     sh "git log"
                   }
                 }
@@ -250,6 +247,7 @@ def call(Map pipelineParams) {
               stage("push docs") {
                 steps {
                   withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
+                    sh "git log"
                     sh "git tag docs-$moduleVersion docs"
                     sh "git push origin docs --tags"
                   }
