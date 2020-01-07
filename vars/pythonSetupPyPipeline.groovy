@@ -217,42 +217,32 @@ def call(Map pipelineParams) {
           } // Deploy Docker
 
           stage("Deploy Docs") {
-            stages {
-              stage("generate") {
-                agent {
-                  docker {
-                    image buildImageName
-                    args pipelineParams.dockerRunArgs
-                    reuseNode true
-                  }
-                }
-                when {
-                  allOf {
-                    expression {
-                      params.doRelease &&
-                      //check if "ghp-import" plugin is installed to deploy docs
-                      isDeployDocsPluginInstalled()
-                    }
-                  }
-                }
-                steps {
-                  withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
-                    //sh "git config user.name \"tt-ci\""
-                    //sh "git config user.email \"noreply@tomtom.com\""
-                    sh "git fetch origin docs:docs"
-                    sh "ghp-import -m \"Documentation update to $moduleVersion\" -b docs build/sphinx/html"
-                    sh "git checkout docs"
-                    sh "git log"
-                  }
+            agent {
+              docker {
+                image buildImageName
+                args pipelineParams.dockerRunArgs
+                reuseNode true
+              }
+            }
+            when {
+              allOf {
+                expression {
+                  params.doRelease &&
+                  //check if "ghp-import" plugin is installed to deploy docs
+                  isDeployDocsPluginInstalled()
                 }
               }
-              stage("push docs") {
-                steps {
-                  withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
-                    sh "git tag docs-$moduleVersion docs"
-                    sh "git push origin docs --tags"
-                  }
-                }
+            }
+            steps {
+              withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
+                //sh "git config user.name \"tt-ci\""
+                //sh "git config user.email \"noreply@tomtom.com\""
+                sh "git fetch origin docs:docs"
+                sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
+                sh "git checkout docs"
+                sh "git log"
+                sh "git tag docs-$moduleVersion docs"
+                sh "git push origin docs --tags"
               }
             }
           } // Deploy Docs
