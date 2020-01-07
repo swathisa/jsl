@@ -225,6 +225,8 @@ def call(Map pipelineParams) {
               }
             }
             when {
+              // * the docker agent is used to check if ghp-import is installed and hence beforeAgent 
+              //   is not set to true in the when condition
               allOf {
                 expression {
                   params.doRelease &&
@@ -235,14 +237,12 @@ def call(Map pipelineParams) {
             }
             steps {
               withGitEnv([scmCredentialsId: pipelineParams.scmCredentialsId]) {
-                sh "git config user.name \"tt-ci\""
-                sh "git config user.email \"noreply@tomtom.com\""
-                sh "git fetch origin docs:docs"
-                sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
-                sh "git checkout docs"
-                sh "git log"
-                sh "git tag docs-$moduleVersion docs"
-                sh "git push origin docs --tags"
+                script {
+                  sh "git fetch origin docs:docs"
+                  sh "ghp-import -m \"Documentation update to $moduleVersion\" -p -b docs build/sphinx/html"
+                  sh "git tag docs-$moduleVersion docs"
+                  sh "git push origin docs --tags"
+                }
               }
             }
           } // Deploy Docs
